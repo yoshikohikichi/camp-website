@@ -16,6 +16,8 @@
       color: #5d4037;
       margin: 0;
       padding: 0;
+      opacity: 0; /* 🔹 最初は透明 */
+      transition: opacity 2s ease-in-out; /* 🔹 徐々に表示 */
     }
 
     /* ウッド風の背景 */
@@ -99,7 +101,6 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: black;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -110,12 +111,10 @@
     /* ドアデザイン */
     .detective-door {
       position: absolute;
-      width: 50vw;  /* 画面の半分ずつ */
+      width: 50vw;
       height: 100vh;
-      background: url('https://www.transparenttextures.com/patterns/wood.png') repeat;
       background-size: cover;
-      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.7);
-      transition: transform 2s ease-in-out;
+      transition: transform 4s ease-in-out; /* 🔹 開く時間を3秒に変更 */
     }
 
     /* 左のドア */
@@ -123,6 +122,8 @@
       left: 0;
       transform: translateX(0);
       border-right: 5px solid #222;
+      background: url('left-door.png') no-repeat center center;
+      background-size: cover;
     }
 
     /* 右のドア */
@@ -130,6 +131,8 @@
       right: 0;
       transform: translateX(0);
       border-left: 5px solid #222;
+      background: url('right-door.png') no-repeat center center;
+      background-size: cover;
     }
 
     /* ドアが開く動き */
@@ -151,20 +154,19 @@
 </head>
 <body>
 
-  <!-- 🕵️ 名探偵コナン風ドア (追加部分) -->
+  <!-- 🕵️ 名探偵コナン風ドア -->
   <div class="detective-door-container">
     <div class="detective-door left-door"></div>
     <div class="detective-door right-door"></div>
   </div>
-  <!-- ここまで 🕵️ -->
 
   <main>
     <h1>Sanpegrino</h1>
     <p>ようこそ、サンペグリノのお部屋へ☕</p>
 
     <div>
-        <h2>アクセスカウンター: <span id="counter"></span></h2>
-      </div>
+      <h2>アクセスカウンター: <span id="counter"></span></h2>
+    </div>
 
     <ul>
       <li><a href="https://yoshikohikichi.github.io/camp-website/pokemon.html">今日のポケモン</a></li>
@@ -185,18 +187,58 @@
   <script>
     window.onload = function() {
       const doorContainer = document.querySelector('.detective-door-container');
+      const body = document.body;
 
-      // 1. 0.5秒後にドアが開く
+      // 1. 1秒後にドアを開く（遅らせる）
       setTimeout(() => {
         doorContainer.classList.add('door-open');
-      }, 500);
+      }, 1000);
 
-      // 2. 3秒後にフェードアウトして消える
+      // 2. 2秒後にページをフェードイン（ドアが開く途中で見え始める）
+      setTimeout(() => {
+        body.style.opacity = "1";
+      }, 2000);
+
+      // 3. 4秒後にドアをフェードアウトして消す（開いた後も少し残る）
       setTimeout(() => {
         doorContainer.classList.add('fade-out');
-      }, 3000);
+      }, 4000);
     };
+
+    
   </script>
 
+<!-- 🔽 Firebase カウンターのスクリプト -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getFirestore, doc, runTransaction } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAzTSDWyKtxWBt5xoArrVTp5Oy4ETYnBg8",
+      authDomain: "yoshiko-ed3d1.firebaseapp.com",
+      projectId: "yoshiko-ed3d1",
+      storageBucket: "yoshiko-ed3d1.firebasestorage.app",
+      messagingSenderId: "5950709427",
+      appId: "1:5950709427:web:e5e809be222d29d69edac6",
+      measurementId: "G-5VWXFHKF0F"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const counterDoc = doc(db, 'counters', 'access');
+
+    const incrementCounter = async () => {
+      let newCount = 0;
+      await runTransaction(db, async (transaction) => {
+        const docSnap = await transaction.get(counterDoc);
+        newCount = (docSnap.exists() ? docSnap.data().count : 0) + 1;
+        transaction.set(counterDoc, { count: newCount });
+      });
+      document.getElementById('counter').textContent = newCount;
+    };
+
+    incrementCounter();
+  </script>
+  
 </body>
 </html>
