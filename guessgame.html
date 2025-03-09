@@ -1,50 +1,83 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <title>数当てゲーム</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>カフェ風 数当てゲーム</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
   <style>
     body {
       text-align: center;
+      background-color: #f3e5d8;
+      font-family: 'Arial', sans-serif;
+      color: #5a3e36;
     }
 
     header {
-      background-color: #f8f9fa;
+      background-color: #8b5e3c;
       padding: 20px;
-    }
-
-    /* ぴょんぴょんアニメーション */
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-20px); }
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
 
     header img {
-      max-width: 100%;
-      height: auto;
-      animation: bounce 1s infinite ease-in-out;
+      width: 40px;
+      height: 40px;
     }
 
-    #guessGame {
-      margin: 20px;
+    main {
+      margin: 30px;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     }
 
     #guessGame input {
       width: 200px;
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #8b5e3c;
+      text-align: center;
+    }
+
+    #guessSubmit, #resetGame {
+      background-color: #8b5e3c;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #guessSubmit:hover, #resetGame:hover {
+      background-color: #a06a47;
+    }
+
+    footer {
+      margin-top: 20px;
+      color: #8b5e3c;
+      font-size: 0.9rem;
     }
   </style>
 </head>
 <body>
 
 <header>
-    <img src="chinchila_Number.png" alt="チンチラNo." width="200">
+    <img src="https://cdn-icons-png.flaticon.com/512/924/924514.png" alt="coffee icon">
+    <span>数当てゲーム</span>
 </header>
 
 <main class="container">
-  <h1>数当てゲーム (1~100)</h1>
+  <h2>1から100の数字を当てよう！</h2>
   
   <div id="guessGame">
-    <label for="guessField">予想: </label>
+    <label for="guessField">予想の数字:</label>
     <input type="number" min="1" max="100" id="guessField">
     <input type="submit" value="予想を入力" id="guessSubmit">
     <p id="guessResult"></p>
@@ -52,6 +85,10 @@
     <button id="resetGame">リセット</button>
   </div>
 </main>
+
+<footer>
+  <p>☕ リラックスしながら楽しんでね ☕</p>
+</footer>
 
 <script>
   let answerNumber;
@@ -77,13 +114,13 @@
     attempts--;
 
     if (userGuess === answerNumber) { 
-      guessResult.textContent = '正解です！';
+      guessResult.textContent = '🎉 正解です！おめでとう！';
       document.querySelector('#guessSubmit').disabled = true;
       document.querySelector('#guessField').disabled = true;
     } else {
-      guessResult.textContent = userGuess < answerNumber ? 'もっと大きいです' : 'もっと小さいです';
+      guessResult.textContent = userGuess < answerNumber ? '☕ もっと大きいです' : '☕ もっと小さいです';
       if (attempts === 0) {
-        guessResult.textContent += ' ゲームオーバー！正解は ' + answerNumber + ' でした。';
+        guessResult.textContent += ' 🏆 ゲームオーバー！正解は ' + answerNumber + ' でした。';
         document.querySelector('#guessSubmit').disabled = true;
         document.querySelector('#guessField').disabled = true;
       }

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <title>Example Website</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" >
+</head>
+<body>
+  <main class="container">
+    <h1>Example Website</h1>
+
+    <div>
+      <h2>アクセスカウンター: <span id="counter"></span></h2>
+    </div>
+  </main>
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getFirestore, doc, runTransaction } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+    apiKey: "AIzaSyAzTSDWyKtxWBt5xoArrVTp5Oy4ETYnBg8",
+    authDomain: "yoshiko-ed3d1.firebaseapp.com",
+    projectId: "yoshiko-ed3d1",
+    storageBucket: "yoshiko-ed3d1.firebasestorage.app",
+    messagingSenderId: "5950709427",
+    appId: "1:5950709427:web:e5e809be222d29d69edac6",
+    measurementId: "G-5VWXFHKF0F"
+  };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const counterDoc = doc(db, 'counters', 'access');
+
+    // カウンターを増やして表示
+    const incrementCounter = async () => {
+      let newCount = 0;
+      await runTransaction(db, async (transaction) => {
+        const docSnap = await transaction.get(counterDoc);
+        newCount = (docSnap.exists() ? docSnap.data().count : 0) + 1;
+        transaction.set(counterDoc, { count: newCount });
+      });
+      document.getElementById('counter').textContent = newCount;
+    };
+
+    // ページロード時にカウンターを増やして表示
+    incrementCounter();
+  </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>アースカラー占い</title>
+    <title>色占い</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,25 +15,28 @@
             color: #5a4a42;
         }
         #color-box {
-            width: 200px;
-            height: 200px;
+            width: 80%;
+            max-width: 250px;
+            height: 250px;
             margin: 20px auto;
             border: 3px solid #5a4a42;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             color: white;
+            transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
         }
         button {
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 12px 24px;
+            font-size: 18px;
             background-color: #8b6f47;
             color: white;
             border: none;
             cursor: pointer;
             border-radius: 5px;
+            transition: background-color 0.3s ease-in-out;
         }
         button:hover {
             background-color: #5a4a42;
@@ -42,7 +45,7 @@
 </head>
 <body>
 
-    <h1>今日のアースカラー占い</h1>
+    <h1>今日の色占い</h1>
     <p>ボタンを押して、今日のラッキーカラーをチェック！</p>
 
     <div id="color-box">？</div>
@@ -70,7 +73,20 @@
             colorBox.style.backgroundColor = luckyColor.code;
             colorBox.textContent = luckyColor.name;
 
+            // 明るい色なら文字を黒、暗い色なら白にする
+            colorBox.style.color = isBrightColor(luckyColor.code) ? "#333" : "#fff";
+
             document.getElementById("message").textContent = luckyColor.message;
+        }
+
+        function isBrightColor(hex) {
+            // 16進数をRGBに変換
+            const r = parseInt(hex.substr(1, 2), 16);
+            const g = parseInt(hex.substr(3, 2), 16);
+            const b = parseInt(hex.substr(5, 2), 16);
+            // 輝度計算（簡易版）
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            return brightness > 140; // 140以上なら明るいと判断
         }
     </script>
 
