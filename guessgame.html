@@ -1,120 +1,52 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <title>数当てゲーム</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" >
-  <style>
-    body {
-      text-align: center;
-    }
-
-    header {
-      background-color: #f8f9fa;
-      padding: 20px;
-    }
-
-    header img {
-      max-width: 100%;
-      height: auto;
-    }
-
-    #guessGame {
-      margin: 20px;
-    }
-
-    #guessGame input {
-      width: 200px;
-    }
-  </style>
-</head>
-<body>
-
-    <header>
-        <img src="chinchila_Number.png" alt="チンチラNo" width="300">
-        
-      </header>
-
-<main class="container">
-  <h1>数当てゲーム (1~100)</h1>
-  
-  <div id="guessGame">
-    <label for="guessField">予想: </label>
-    <input type="number" min="1" max="100" id="guessField">
-    <input type="submit" value="予想を入力" id="guessSubmit">
-    <p id="guessResult"></p>
-    <p id="attemptsLeft">残り回数: 5</p>    
-    <button id="resetGame">リセット</button>
-
-  </div>
-</main>
-
 <script>
     let answerNumber;
     let attempts;
+    const bgm = document.getElementById('bgm');
 
-  function initializeGame() {
+    function initializeGame() {
+        answerNumber = Math.floor(Math.random() * 100) + 1;
+        console.log('正解は' + answerNumber);
+        attempts = 5;
 
-    // 1から100までのランダムな整数を生成し、コンソールにログを出力
-    answerNumber = Math.floor(Math.random() * 100) + 1;
-    console.log('正解は' + answerNumber);
-    attempts = 5;
-    // 結果を表示する要素を取得
-    document.querySelector('#guessResult').textContent = '';
+        document.querySelector('#guessResult').textContent = '';
+        document.querySelector('#attemptsLeft').textContent = '残り回数: ' + attempts;
+        document.querySelector('#guessField').value = '';
+        document.querySelector('#guessField').disabled = false;
+        document.querySelector('#guessSubmit').disabled = false;
 
-    document.querySelector('#attemptsLeft').textContent = '残り回数: ' + attempts;
-
-    // 数値入力フィールドを取得
-    document.querySelector('#guessField').value = '';
-    document.querySelector('#guessField').disabled = false;
-
-    // submitボタンを取得
-    document.querySelector('#guessSubmit').disabled = false;
-  }
-
-    // ユーザーの入力をチェックし、結果を表示
-  function checkGuess() {
-    if (attempts <= 0) return; // すでに回数がゼロなら処理しない
-
-    // ユーザの入力した値を取得
-    let userGuess = Number(document.querySelector('#guessField').value);
-    // 結果を表示する要素を取得
-    let guessResult = document.querySelector('#guessResult');
-    attempts--; // 残り回数を減らす
-
-    if (userGuess === answerNumber) { 
-
-    // ユーザの入力が正解
-      guessResult.textContent = '正解です！';
-
-    // submitボタンを取得
-      document.querySelector('#guessSubmit').disabled = true;
-    // 数値入力フィールドを取得
-      document.querySelector('#guessField').disabled = true;
-    } else {
-
-    // ユーザの入力が正解より小さい
-    // ユーザの入力が正解より大きい
-      guessResult.textContent = userGuess < answerNumber ? 'もっと大きいです' : 'もっと小さいです';
-      if (attempts === 0) {
-        guessResult.textContent += ' ゲームオーバー！正解は ' + answerNumber + ' でした。';
-
-    // submitボタンを取得
-        document.querySelector('#guessSubmit').disabled = true;
-    // 数値入力フィールドを取得
-        document.querySelector('#guessField').disabled = true;
-      }
+        // BGMを最初から再生
+        bgm.currentTime = 0;
+        bgm.play();
     }
-    //   回数を制限
-    document.querySelector('#attemptsLeft').textContent = '残り回数: ' + attempts;
-  }
 
-    // submitボタンを取得
-  document.querySelector('#guessSubmit').addEventListener('click', checkGuess);
-  document.querySelector('#resetGame').addEventListener('click', initializeGame);
+    function checkGuess() {
+        if (attempts <= 0) return;
+        
+        let userGuess = Number(document.querySelector('#guessField').value);
+        let guessResult = document.querySelector('#guessResult');
+        attempts--;
 
-  initializeGame();
+        if (userGuess === answerNumber) { 
+            guessResult.textContent = '正解です！';
+            document.querySelector('#guessSubmit').disabled = true;
+            document.querySelector('#guessField').disabled = true;
+            bgm.pause(); // 正解したらBGMを停止
+        } else {
+            guessResult.textContent = userGuess < answerNumber ? 'もっと大きいです' : 'もっと小さいです';
+            if (attempts === 0) {
+                guessResult.textContent += ' ゲームオーバー！正解は ' + answerNumber + ' でした。';
+                document.querySelector('#guessSubmit').disabled = true;
+                document.querySelector('#guessField').disabled = true;
+                bgm.pause(); // ゲームオーバーでもBGMを停止
+            }
+        }
+
+        document.querySelector('#attemptsLeft').textContent = '残り回数: ' + attempts;
+        bgm.play(); // ユーザー操作時に再生（停止してしまう場合の対策）
+    }
+
+    document.querySelector('#guessSubmit').addEventListener('click', checkGuess);
+    document.querySelector('#resetGame').addEventListener('click', initializeGame);
+
+    initializeGame();
 </script>
-
-</body>
-</html>
-
