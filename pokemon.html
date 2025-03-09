@@ -9,11 +9,6 @@
       src: url('https://fonts.cdnfonts.com/s/29995/Pokemon%20Solid.ttf') format('truetype');
     }
 
-    @font-face {
-      font-family: 'Pokemon Hollow';
-      src: url('https://fonts.cdnfonts.com/s/29995/Pokemon%20Hollow.ttf') format('truetype');
-    }
-
     body {
       position: relative;
       overflow: hidden;
@@ -21,18 +16,6 @@
       background: linear-gradient(to bottom, #FFCC00, #FF5555);
       color: #FFF;
       text-align: center;
-    }
-
-    #backgroundOverlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(255, 255, 255, 0.7);
-      backdrop-filter: blur(10px);
-      display: none;
-      z-index: 5;
     }
 
     #pokemon {
@@ -62,6 +45,29 @@
       transition: opacity 0.5s ease-in-out;
     }
 
+    /* ポケモンの名前と説明を白色に */
+    #pokemonName, #pokemonDescription {
+      color: #FFF;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      filter: blur(10px);
+      transition: opacity 0.5s ease-in-out, filter 0.5s ease-in-out;
+    }
+
+    /* ポケモンのかわいいアニメーション */
+    .bounce {
+      animation: bounce 1s infinite alternate ease-in-out;
+    }
+
+    @keyframes bounce {
+      from {
+        transform: scale(1) translateY(0px);
+      }
+      to {
+        transform: scale(1.2) translateY(-10px);
+      }
+    }
+
     #pokeball {
       width: 100%;
       position: absolute;
@@ -71,28 +77,26 @@
       animation: pulse 1.2s ease-in-out infinite alternate, shake 0.5s infinite alternate;
     }
 
-    #pokemonName {
-      font-family: 'Pokemon Solid', sans-serif;
-      font-size: 24px;
-      color: #FFDD44;
-      text-shadow: 3px 3px 0px #000;
-      opacity: 0;
-      filter: blur(10px);
-      transition: opacity 0.5s ease-in-out, filter 0.5s ease-in-out;
+    @keyframes pulse {
+      from {
+        transform: scale(1);
+      }
+      to {
+        transform: scale(1.3);
+      }
     }
 
-    #pokemonDescription {
-      font-family: 'Pokemon Solid', sans-serif;
-      opacity: 0;
-      filter: blur(10px);
-      transition: opacity 0.5s ease-in-out, filter 0.5s ease-in-out;
-      color: #FFF;
+    @keyframes shake {
+      from {
+        transform: translateX(-5px);
+      }
+      to {
+        transform: translateX(5px);
+      }
     }
 
     h1 {
-      position: relative;
-      z-index: 20;
-      font-family: 'Pokemon Hollow', sans-serif;
+      font-family: 'Pokemon Solid', sans-serif;
       font-size: 32px;
       color: #FFF;
       text-shadow: 4px 4px 0px #000;
@@ -116,29 +120,9 @@
       transform: scale(1.1);
       box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
     }
-
-    @keyframes shake {
-      from {
-        transform: translateX(-5px);
-      }
-      to {
-        transform: translateX(5px);
-      }
-    }
-
-    @keyframes pulse {
-      from {
-        transform: scale(1);
-      }
-      to {
-        transform: scale(1.3);
-      }
-    }
   </style>
 </head>
 <body>
-
-<div id="backgroundOverlay"></div>
 
 <main class="container">
   <h1>今日のポケモン</h1>
@@ -156,25 +140,22 @@
 </main>
 
 <script>
-  // 各要素を取得
   const pokemonName = document.getElementById('pokemonName');
   const pokemonImage = document.getElementById('pokemonImage');
   const pokemonDescription = document.getElementById('pokemonDescription');
   const updateButton = document.getElementById('updateButton');
   const pokeball = document.getElementById('pokeball');
-  const backgroundOverlay = document.getElementById('backgroundOverlay');
 
-  // ポケモン情報を取得・表示する関数
   function fetchPokemon() {
     pokeball.style.display = "block";
     pokemonImage.style.opacity = "0";
+    pokemonImage.classList.remove("bounce"); // アニメーションをリセット
     pokemonName.style.opacity = "0";
     pokemonName.style.filter = "blur(10px)";
     pokemonDescription.style.opacity = "0";
     pokemonDescription.style.filter = "blur(10px)";
     pokemonName.textContent = "？？？？";
     pokemonDescription.textContent = "？？？？";
-    backgroundOverlay.style.display = "block";
 
     setTimeout(() => {
       const pokemonNumber = Math.floor(Math.random() * 898) + 1;
@@ -193,6 +174,11 @@
           const japaneseTextEntry = speciesData.flavor_text_entries.find(entry => entry.language.name === "ja");
           pokemonDescription.textContent = japaneseTextEntry ? japaneseTextEntry.flavor_text.replace(/[\n\f]/g, ' ') : "説明が見つかりません";
 
+          // 鳴き声の再生
+          const soundUrl = `https://play.pokemonshowdown.com/audio/cries/${speciesData.name}.mp3`;
+          const audio = new Audio(soundUrl);
+          audio.play();
+
           setTimeout(() => {
             pokeball.style.display = "none";
             pokemonImage.style.opacity = "1";
@@ -200,7 +186,7 @@
             pokemonName.style.filter = "blur(0px)";
             pokemonDescription.style.opacity = "1";
             pokemonDescription.style.filter = "blur(0px)";
-            backgroundOverlay.style.display = "none";
+            pokemonImage.classList.add("bounce"); // ポケモンがぴょんぴょん動く
           }, 500);
         })
         .catch(error => console.error(`エラー: ${error}`));
