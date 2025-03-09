@@ -23,6 +23,7 @@
     <input type="number" min="1" max="100" id="guessField">
     <input type="submit" value="予想を入力" id="guessSubmit">
     <p id="guessResult"></p>
+    <p id="attemptsLeft">残り回数: 5</p>
   </div>
 </main>
 
@@ -40,18 +41,41 @@
   // 結果を表示する要素を取得
   let guessResult = document.querySelector('#guessResult');
 
+    //   回数を制限
+  let attemptsLeft = document.querySelector('#attemptsLeft');
+
+  let attempts = 5; // 回数制限
+
   // ユーザーの入力をチェックし、結果を表示
   function checkGuess() {
+    if (attempts <= 0) return; // すでに回数がゼロなら処理しない
+
     // ユーザの入力した値を取得
     let userGuess = Number(guessField.value);
 
     if (userGuess === answerNumber) { // ユーザの入力が正解
       guessResult.textContent = '正解です！';
-    } else if (userGuess < answerNumber) { // ユーザの入力が正解より小さい
-      guessResult.textContent = 'もっと大きいです';
-    } else if (userGuess > answerNumber) { // ユーザの入力が正解より大きい
+      guessSubmit.disabled = true;
+      guessField.disabled = true;
+
+    } else  { // ユーザの入力が正解より小さい
+
+      attempts--; // 残り回数を減らす
+      if (userGuess < answerNumber) {
+        guessResult.textContent = 'もっと大きいです';
+
+    } else   { // ユーザの入力が正解より大きい
       guessResult.textContent = 'もっと小さいです';
     }
+
+    if (attempts === 0) {
+        guessResult.textContent += ' ゲームオーバー！正解は ' + answerNumber + ' でした。';
+        guessSubmit.disabled = true;
+        guessField.disabled = true;
+      }
+
+  }
+  attemptsLeft.textContent = '残り回数: ' + attempts;
   }
 
   // submitがクリックされたときに、checkGuess関数を呼び出す
