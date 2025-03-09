@@ -4,9 +4,23 @@
   <title>今日のポケモン</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
   <style>
+    @font-face {
+      font-family: 'Pokemon Solid';
+      src: url('https://fonts.cdnfonts.com/s/29995/Pokemon%20Solid.ttf') format('truetype');
+    }
+
+    @font-face {
+      font-family: 'Pokemon Hollow';
+      src: url('https://fonts.cdnfonts.com/s/29995/Pokemon%20Hollow.ttf') format('truetype');
+    }
+
     body {
       position: relative;
       overflow: hidden;
+      font-family: 'Pokemon Solid', sans-serif;
+      background: linear-gradient(to bottom, #FFCC00, #FF5555);
+      color: #FFF;
+      text-align: center;
     }
 
     #backgroundOverlay {
@@ -22,11 +36,14 @@
     }
 
     #pokemon {
-      width: 300px;
+      width: 320px;
       text-align: center;
       margin: 0 auto;
       position: relative;
       z-index: 10;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 15px;
     }
 
     #pokemonContainer {
@@ -51,33 +68,70 @@
       top: 0;
       left: 0;
       z-index: 10;
-      animation: shake 0.5s infinite alternate;
+      animation: pulse 1.2s ease-in-out infinite alternate, shake 0.5s infinite alternate;
     }
 
-    #pokemonName, #pokemonDescription {
+    #pokemonName {
+      font-family: 'Pokemon Solid', sans-serif;
+      font-size: 24px;
+      color: #FFDD44;
+      text-shadow: 3px 3px 0px #000;
       opacity: 0;
       filter: blur(10px);
       transition: opacity 0.5s ease-in-out, filter 0.5s ease-in-out;
     }
 
+    #pokemonDescription {
+      font-family: 'Pokemon Solid', sans-serif;
+      opacity: 0;
+      filter: blur(10px);
+      transition: opacity 0.5s ease-in-out, filter 0.5s ease-in-out;
+      color: #FFF;
+    }
+
     h1 {
       position: relative;
-      z-index: 20; /* モザイクの影響を受けない */
+      z-index: 20;
+      font-family: 'Pokemon Hollow', sans-serif;
+      font-size: 32px;
+      color: #FFF;
+      text-shadow: 4px 4px 0px #000;
     }
 
     button {
       display: block;
       margin: 20px auto;
-      position: relative;
-      z-index: 10;
+      padding: 15px 30px;
+      font-size: 18px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-family: 'Pokemon Solid', sans-serif;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
     }
 
     @keyframes shake {
       from {
+        transform: translateX(-5px);
+      }
+      to {
+        transform: translateX(5px);
+      }
+    }
+
+    @keyframes pulse {
+      from {
         transform: scale(1);
       }
       to {
-        transform: scale(1.2);
+        transform: scale(1.3);
       }
     }
   </style>
@@ -112,7 +166,6 @@
 
   // ポケモン情報を取得・表示する関数
   function fetchPokemon() {
-    // モンスターボールを表示、ポケモン・説明文・名前を一旦隠す
     pokeball.style.display = "block";
     pokemonImage.style.opacity = "0";
     pokemonName.style.opacity = "0";
@@ -121,54 +174,40 @@
     pokemonDescription.style.filter = "blur(10px)";
     pokemonName.textContent = "？？？？";
     pokemonDescription.textContent = "？？？？";
-    backgroundOverlay.style.display = "block"; // モザイクを適用
+    backgroundOverlay.style.display = "block";
 
-    // 1.5秒後にポケモンを表示
     setTimeout(() => {
-      // ランダムなポケモンIDを生成（1～898）
       const pokemonNumber = Math.floor(Math.random() * 898) + 1;
 
-      // PokéAPIからポケモン情報を取得
       fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonNumber}`)
         .then(response => response.json())
         .then(data => {
-          // 画像を設定
           pokemonImage.src = data.sprites.front_default;
-
-          // ポケモンの種族データを取得
           return fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemonNumber}`);
         })
         .then(response => response.json())
         .then(speciesData => {
-          // 日本語名を取得
           const japaneseName = speciesData.names.find(name => name.language.name === "ja").name;
           pokemonName.textContent = japaneseName;
 
-          // 日本語の説明文を取得
           const japaneseTextEntry = speciesData.flavor_text_entries.find(entry => entry.language.name === "ja");
           pokemonDescription.textContent = japaneseTextEntry ? japaneseTextEntry.flavor_text.replace(/[\n\f]/g, ' ') : "説明が見つかりません";
 
-          // ポケモン・名前・説明文を表示
           setTimeout(() => {
-            pokeball.style.display = "none";  // モンスターボールを消す
-            pokemonImage.style.opacity = "1"; // ポケモンをフェードイン
-            pokemonName.style.opacity = "1";  // 名前をフェードイン
-            pokemonName.style.filter = "blur(0px)"; // モザイク解除
-            pokemonDescription.style.opacity = "1"; // 説明文をフェードイン
-            pokemonDescription.style.filter = "blur(0px)"; // モザイク解除
-            backgroundOverlay.style.display = "none"; // 背景モザイクを解除
+            pokeball.style.display = "none";
+            pokemonImage.style.opacity = "1";
+            pokemonName.style.opacity = "1";
+            pokemonName.style.filter = "blur(0px)";
+            pokemonDescription.style.opacity = "1";
+            pokemonDescription.style.filter = "blur(0px)";
+            backgroundOverlay.style.display = "none";
           }, 500);
         })
-        .catch(error => {
-          console.error(`エラーが発生しました: ${error}`);
-        });
+        .catch(error => console.error(`エラー: ${error}`));
     }, 1500);
   }
 
-  // 初回ロード時にポケモンを表示
   fetchPokemon();
-
-  // ボタンをクリックしたら新しいポケモンを取得
   updateButton.addEventListener('click', fetchPokemon);
 </script>
 
