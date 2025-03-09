@@ -13,9 +13,16 @@
       padding: 20px;
     }
 
+    /* ぴょんぴょんアニメーション */
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
     header img {
       max-width: 100%;
       height: auto;
+      animation: bounce 1s infinite ease-in-out;
     }
 
     #guessGame {
