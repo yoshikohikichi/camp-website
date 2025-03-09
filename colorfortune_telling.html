@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アースカラー占い</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f1ea;
+            padding: 50px;
+        }
+        h1 {
+            color: #5a4a42;
+        }
+        #color-box {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            border: 3px solid #5a4a42;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #8b6f47;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #5a4a42;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>今日のアースカラー占い</h1>
+    <p>ボタンを押して、今日のラッキーカラーをチェック！</p>
+
+    <div id="color-box">？</div>
+    <button onclick="getLuckyColor()">占う！</button>
+    <p id="message"></p>
+
+    <script>
+        function getLuckyColor() {
+            const colors = [
+                { name: "オリーブグリーン", code: "#808000", message: "落ち着いた心で冷静に行動すると吉！" },
+                { name: "モスグリーン", code: "#6b8e23", message: "調和とバランスを大切にしよう。" },
+                { name: "カーキ", code: "#bdb76b", message: "自然体でいることで運気がアップ！" },
+                { name: "テラコッタ", code: "#d2691e", message: "情熱を持って行動すると良い結果に！" },
+                { name: "サンドベージュ", code: "#c2b280", message: "穏やかな気持ちで過ごすのが吉。" },
+                { name: "ウォルナットブラウン", code: "#5a3e36", message: "落ち着きと安定感が求められる日。" },
+                { name: "マスタードイエロー", code: "#e1ad01", message: "明るく前向きな気持ちが幸運を呼ぶ！" },
+                { name: "ココアブラウン", code: "#7b3f00", message: "リラックスして自然の流れに身を任せよう。" },
+                { name: "フォレストグリーン", code: "#228b22", message: "新しいことに挑戦するチャンスの日！" }
+            ];
+
+            const randomIndex = Math.floor(Math.random() * colors.length);
+            const luckyColor = colors[randomIndex];
+
+            const colorBox = document.getElementById("color-box");
+            colorBox.style.backgroundColor = luckyColor.code;
+            colorBox.textContent = luckyColor.name;
+
+            document.getElementById("message").textContent = luckyColor.message;
+        }
+    </script>
+
+</body>
+</html>
