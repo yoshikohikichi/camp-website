@@ -92,10 +92,71 @@
       color: #8d6e63;
     }
 
-    
+    /* === 🕵️ 名探偵コナン風ドアのスタイル === */
+    .detective-door-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      overflow: hidden;
+    }
+
+    /* ドアデザイン */
+    .detective-door {
+      position: absolute;
+      width: 50vw;  /* 画面の半分ずつ */
+      height: 100vh;
+      background: url('https://www.transparenttextures.com/patterns/wood.png') repeat;
+      background-size: cover;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.7);
+      transition: transform 2s ease-in-out;
+    }
+
+    /* 左のドア */
+    .left-door {
+      left: 0;
+      transform: translateX(0);
+      border-right: 5px solid #222;
+    }
+
+    /* 右のドア */
+    .right-door {
+      right: 0;
+      transform: translateX(0);
+      border-left: 5px solid #222;
+    }
+
+    /* ドアが開く動き */
+    .detective-door-container.door-open .left-door {
+      transform: translateX(-100%);
+    }
+
+    .detective-door-container.door-open .right-door {
+      transform: translateX(100%);
+    }
+
+    /* ドアが消える */
+    .detective-door-container.fade-out {
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
+
+  <!-- 🕵️ 名探偵コナン風ドア (追加部分) -->
+  <div class="detective-door-container">
+    <div class="detective-door left-door"></div>
+    <div class="detective-door right-door"></div>
+  </div>
+  <!-- ここまで 🕵️ -->
 
   <main>
     <h1>Sanpegrino</h1>
@@ -109,51 +170,33 @@
       <li><a href="https://yoshikohikichi.github.io/camp-website/pokemon.html">今日のポケモン</a></li>
       <li><a href="https://yoshikohikichi.github.io/camp-website/guessgame.html">チンチラ数当てゲーム</a></li>
       <li><a href="https://yoshikohikichi.github.io/camp-website/colorfortune_telling">色占い</a></li>
-      
     </ul>
 
     <img src="cafe.png" alt="サンぺグリノ">
   </main>
+
   <iframe src="https://openprocessing.org/sketch/2036000/embed/" width="1490" height="700"></iframe>
+
   <footer>
     © 2025 Sanpegrino. All rights reserved.
   </footer>
 
-  <script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { getFirestore, doc, runTransaction } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+  <!-- 🔽 名探偵コナン風ドアのスクリプト -->
+  <script>
+    window.onload = function() {
+      const doorContainer = document.querySelector('.detective-door-container');
 
-    const firebaseConfig = {
-    apiKey: "AIzaSyAzTSDWyKtxWBt5xoArrVTp5Oy4ETYnBg8",
-    authDomain: "yoshiko-ed3d1.firebaseapp.com",
-    projectId: "yoshiko-ed3d1",
-    storageBucket: "yoshiko-ed3d1.firebasestorage.app",
-    messagingSenderId: "5950709427",
-    appId: "1:5950709427:web:e5e809be222d29d69edac6",
-    measurementId: "G-5VWXFHKF0F"
-  };
+      // 1. 0.5秒後にドアが開く
+      setTimeout(() => {
+        doorContainer.classList.add('door-open');
+      }, 500);
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const counterDoc = doc(db, 'counters', 'access');
-
-    // カウンターを増やして表示
-    const incrementCounter = async () => {
-      let newCount = 0;
-      await runTransaction(db, async (transaction) => {
-        const docSnap = await transaction.get(counterDoc);
-        newCount = (docSnap.exists() ? docSnap.data().count : 0) + 1;
-        transaction.set(counterDoc, { count: newCount });
-      });
-      document.getElementById('counter').textContent = newCount;
+      // 2. 3秒後にフェードアウトして消える
+      setTimeout(() => {
+        doorContainer.classList.add('fade-out');
+      }, 3000);
     };
-
-    // ページロード時にカウンターを増やして表示
-    incrementCounter();
   </script>
+
 </body>
 </html>
-
-
