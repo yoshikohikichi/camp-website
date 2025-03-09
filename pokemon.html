@@ -4,27 +4,72 @@
   <title>今日のポケモン</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
   <style>
+    body {
+      position: relative;
+      overflow: hidden;
+    }
+
+    #backgroundOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+      display: none;
+      z-index: 5;
+    }
+
     #pokemon {
       width: 300px;
       text-align: center;
+      margin: 0 auto;
+      position: relative;
+      z-index: 10;
+    }
+
+    #pokemonContainer {
+      position: relative;
+      width: 150px;
+      height: 150px;
       margin: 0 auto;
     }
 
     #pokemonImage {
       width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
       transition: opacity 0.5s ease-in-out;
     }
 
     #pokeball {
-      width: 100px;
-      display: none;
-      margin: 0 auto;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 10;
       animation: shake 0.5s infinite alternate;
+    }
+
+    #pokemonName, #pokemonDescription {
+      opacity: 0;
+      filter: blur(10px);
+      transition: opacity 0.5s ease-in-out, filter 0.5s ease-in-out;
+    }
+
+    h1 {
+      position: relative;
+      z-index: 20; /* モザイクの影響を受けない */
     }
 
     button {
       display: block;
       margin: 20px auto;
+      position: relative;
+      z-index: 10;
     }
 
     @keyframes shake {
@@ -39,14 +84,18 @@
 </head>
 <body>
 
+<div id="backgroundOverlay"></div>
+
 <main class="container">
   <h1>今日のポケモン</h1>
   
   <div id="pokemon">
-    <h2 id="pokemonName"></h2>
-    <img id="pokeball" src="https://upload.wikimedia.org/wikipedia/commons/3/39/Pokeball.PNG" alt="モンスターボール">
-    <img id="pokemonImage" src="" alt="ポケモン画像" style="opacity: 0;">
-    <p id="pokemonDescription"></p>
+    <h2 id="pokemonName">？？？？</h2>
+    <div id="pokemonContainer">
+      <img id="pokeball" src="https://upload.wikimedia.org/wikipedia/commons/3/39/Pokeball.PNG" alt="モンスターボール">
+      <img id="pokemonImage" src="" alt="ポケモン画像">
+    </div>
+    <p id="pokemonDescription">？？？？</p>
   </div>
 
   <button id="updateButton">今日のラッキーポケモンは？</button>
@@ -59,14 +108,20 @@
   const pokemonDescription = document.getElementById('pokemonDescription');
   const updateButton = document.getElementById('updateButton');
   const pokeball = document.getElementById('pokeball');
+  const backgroundOverlay = document.getElementById('backgroundOverlay');
 
   // ポケモン情報を取得・表示する関数
   function fetchPokemon() {
-    // モンスターボールを表示、ポケモンを一旦隠す
+    // モンスターボールを表示、ポケモン・説明文・名前を一旦隠す
     pokeball.style.display = "block";
     pokemonImage.style.opacity = "0";
-    pokemonName.textContent = "";
-    pokemonDescription.textContent = "";
+    pokemonName.style.opacity = "0";
+    pokemonName.style.filter = "blur(10px)";
+    pokemonDescription.style.opacity = "0";
+    pokemonDescription.style.filter = "blur(10px)";
+    pokemonName.textContent = "？？？？";
+    pokemonDescription.textContent = "？？？？";
+    backgroundOverlay.style.display = "block"; // モザイクを適用
 
     // 1.5秒後にポケモンを表示
     setTimeout(() => {
@@ -93,9 +148,16 @@
           const japaneseTextEntry = speciesData.flavor_text_entries.find(entry => entry.language.name === "ja");
           pokemonDescription.textContent = japaneseTextEntry ? japaneseTextEntry.flavor_text.replace(/[\n\f]/g, ' ') : "説明が見つかりません";
 
-          // ポケモンを表示
-          pokeball.style.display = "none";
-          pokemonImage.style.opacity = "1";
+          // ポケモン・名前・説明文を表示
+          setTimeout(() => {
+            pokeball.style.display = "none";  // モンスターボールを消す
+            pokemonImage.style.opacity = "1"; // ポケモンをフェードイン
+            pokemonName.style.opacity = "1";  // 名前をフェードイン
+            pokemonName.style.filter = "blur(0px)"; // モザイク解除
+            pokemonDescription.style.opacity = "1"; // 説明文をフェードイン
+            pokemonDescription.style.filter = "blur(0px)"; // モザイク解除
+            backgroundOverlay.style.display = "none"; // 背景モザイクを解除
+          }, 500);
         })
         .catch(error => {
           console.error(`エラーが発生しました: ${error}`);
