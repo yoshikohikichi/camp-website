@@ -9,11 +9,27 @@
             font-family: Arial, sans-serif;
             text-align: center;
             background-color: #f4f1ea;
+            background-image: url('plant.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             padding: 50px;
+            animation: moveBackground 30s linear infinite alternate;
         }
+
+        @keyframes moveBackground {
+            0% {
+                background-position: center top;
+            }
+            100% {
+                background-position: center bottom;
+            }
+        }
+
         h1 {
             color: #5a4a42;
         }
+
         #color-box {
             width: 80%;
             max-width: 250px;
@@ -27,7 +43,9 @@
             font-weight: bold;
             color: white;
             transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+            background-color: rgba(255, 255, 255, 0.8);
         }
+
         button {
             padding: 12px 24px;
             font-size: 18px;
@@ -38,6 +56,7 @@
             border-radius: 5px;
             transition: background-color 0.3s ease-in-out;
         }
+
         button:hover {
             background-color: #5a4a42;
         }
@@ -73,20 +92,17 @@
             colorBox.style.backgroundColor = luckyColor.code;
             colorBox.textContent = luckyColor.name;
 
-            // 明るい色なら文字を黒、暗い色なら白にする
             colorBox.style.color = isBrightColor(luckyColor.code) ? "#333" : "#fff";
 
             document.getElementById("message").textContent = luckyColor.message;
         }
 
         function isBrightColor(hex) {
-            // 16進数をRGBに変換
             const r = parseInt(hex.substr(1, 2), 16);
             const g = parseInt(hex.substr(3, 2), 16);
             const b = parseInt(hex.substr(5, 2), 16);
-            // 輝度計算（簡易版）
             const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-            return brightness > 140; // 140以上なら明るいと判断
+            return brightness > 140;
         }
     </script>
 
